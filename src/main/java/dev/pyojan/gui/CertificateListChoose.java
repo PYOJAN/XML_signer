@@ -65,7 +65,7 @@ public class CertificateListChoose extends JDialog {
 
         // Window side [Input box size is 300]
         int width = 500;
-        int height = 350;
+        int height = 300;
         setPreferredSize(new Dimension(width, height));
 
         // Calculate screen center

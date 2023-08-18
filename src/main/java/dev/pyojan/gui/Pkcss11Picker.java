@@ -24,7 +24,7 @@ public class Pkcss11Picker extends JDialog {
     }
 
     private static boolean isValidFileExtension(String fileName) {
-        return fileName.endsWith(".dll") || fileName.endsWith(".so") || fileName.endsWith(".dylib");
+        return fileName.endsWith(".dll") || fileName.endsWith(".so") || fileName.endsWith(".dylib") || fileName.endsWith("1.0.0");
     }
 
     private void init(String title) {
@@ -106,7 +106,7 @@ public class Pkcss11Picker extends JDialog {
             File selectedFile = fileChooser.getSelectedFile();
             if (selectedFile != null) {
                 if (!isValidFileExtension(selectedFile.getAbsolutePath())) {
-                    errorMessage.setText("Invalid file selected");
+                    errorMessage.setText("Invalid file selected allowed file is");
                 } else {
                     filePathHolder.setText(selectedFile.getAbsolutePath());
                 }

@@ -21,7 +21,7 @@ public class ShortcutRegister extends PropertyUtility {
         Provider provider = Provider.getCurrentProvider(false);
 
         // Register shortcut for PKCS11Chooser
-        KeyStroke pkcs11KeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke pkcs11KeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK);
         provider.register(pkcs11KeyStroke, new HotKeyListener() {
             @Override
             public void onHotKey(HotKey hotKey) {
