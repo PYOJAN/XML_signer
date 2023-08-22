@@ -47,8 +47,8 @@ public class Main {
             awaitInitialization();
             String message = String.format(
                     "Server start successfully on port: %s" +
-                            "<br/><br/>Use combination of CTRL + ATL + Q to stop the Application." +
-                            "<br/><br/>Use combination of CTRL + ATL + P to update PKCS11 path.", PORT);
+                            "<br/><br/>Use combination of <b>CTRL + ATL + Q</b> to stop the Application." +
+                            "<br/><br/>Use combination of <b>CTRL + ATL + P</b> to update PKCS11 path.", PORT);
             MessageGuiDialog.showSuccessDialog("XML Signer and login","<html>"+message+"</html>");
             logger.info("Server Start on the port: " + PORT);
         } else {

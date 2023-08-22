@@ -61,6 +61,7 @@ public class CertificateListChoose extends JDialog {
 
         setContentPane(contentPane);
         setModal(true);
+        setTitle("Select your certificate");
         getRootPane().setDefaultButton(buttonOK);
 
         // Window side [Input box size is 300]

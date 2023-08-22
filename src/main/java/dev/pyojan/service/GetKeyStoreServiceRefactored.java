@@ -2,6 +2,7 @@ package dev.pyojan.service;
 
 import dev.pyojan.config.Config;
 import dev.pyojan.config.Constant;
+import dev.pyojan.entity.request.PKiRequest;
 import dev.pyojan.entity.response.ApiResponse;
 import dev.pyojan.gui.CertificateListChoose;
 import dev.pyojan.gui.MessageGuiDialog;
@@ -21,6 +22,7 @@ public class GetKeyStoreServiceRefactored extends Config {
 
     private static Provider provider = null;
     private static char[] PIN = null;
+    PKiRequest req = null;
     private Map<String, X509Certificate> allX509Certificate = new HashMap<>();
     private PasswordDialog passwordDialog = null;
     @Getter
@@ -31,7 +33,11 @@ public class GetKeyStoreServiceRefactored extends Config {
     private X509Certificate selectedCertificate = null;
     private Map<String, String> certAttribute = new HashMap<>();
 
-    public GetKeyStoreServiceRefactored(Map<String, String> attributes) {
+    public GetKeyStoreServiceRefactored(Map<String, String> attributes, PKiRequest request) {
+
+        if (request != null) {
+            req = request;
+        }
         certAttribute = attributes;
         initializeComponents();
     }
@@ -61,7 +67,7 @@ public class GetKeyStoreServiceRefactored extends Config {
             Security.addProvider(provider);
         } catch (IOException e) {
             MessageGuiDialog.showErrorDialog("Reading Token Error", "<html>PKCS#11 provider: " + e.getMessage() + "<br>Please ensure to login by token driver first.</html>");
-            throw new RuntimeException(ApiResponse.error("txn", "OT-02", e.getLocalizedMessage()));
+            throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-02", e.getLocalizedMessage()));
         }
     }
 
@@ -75,7 +81,7 @@ public class GetKeyStoreServiceRefactored extends Config {
             }
             if (passwordDialog.didUserCancel()) {
                 logoutKeyStore();
-                throw new RuntimeException(ApiResponse.error("txn", "OT-02", "User canceled the request"));
+                throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-02", "User canceled the request"));
             }
 
             try {
@@ -146,7 +152,7 @@ public class GetKeyStoreServiceRefactored extends Config {
         if (!compareLists(newParsedCertList, attrList)) {
             logoutKeyStore();
             MessageGuiDialog.showErrorDialog("Error", "Certificate not found");
-            throw new RuntimeException(ApiResponse.error("txn", "OT-02", "Certificate not found!"));
+            throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-02", "Certificate not found!"));
         }
     }
 
@@ -155,11 +161,15 @@ public class GetKeyStoreServiceRefactored extends Config {
         Date currentDate = new Date();
         if (currentDate.after(certificate.getNotAfter())) {
             MessageGuiDialog.showErrorDialog("Certificate Error", "Certificate is expired.");
-            throw new RuntimeException(ApiResponse.error("txn", "OT-02", "Certificate is expired."));
+            throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-02", "Certificate is expired."));
         }
     }
 
     private boolean isSelfSignCertificate(X509Certificate cert) {
+        if (cert == null) {
+            logoutKeyStore();
+            throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-02", "User canceled the request"));
+        }
         try {
             PublicKey key = cert.getPublicKey();
             cert.verify(key);
@@ -178,11 +188,10 @@ public class GetKeyStoreServiceRefactored extends Config {
 
             if (isSelfSignCertificate(cert)) {
                 MessageGuiDialog.showErrorDialog("Certificate Error", "Invalid certificate, [Self signed]");
-                throw new RuntimeException(ApiResponse.error("txn", "OT-05", "Invalid certificate, [Self signed]"));
+                throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-05", "Invalid certificate, [Self signed]"));
             }
 
             selectedCertificate = cert;
-
         } else if (allX509Certificate.size() > 1) {
             CertificateListChoose certificateListChoose = new CertificateListChoose();
             certificateListChoose.setCertificateList(prepareCertificateList());
@@ -194,7 +203,7 @@ public class GetKeyStoreServiceRefactored extends Config {
             if (isSelfSignCertificate(selectedCertificate)) {
                 logoutKeyStore();
                 MessageGuiDialog.showErrorDialog("Certificate Error", "Invalid certificate, [Self signed]");
-                throw new RuntimeException(ApiResponse.error("txn", "OT-05", "Invalid certificate, [Self signed]"));
+                throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-05", "Invalid certificate, [Self signed]"));
             }
 
 
@@ -221,7 +230,7 @@ public class GetKeyStoreServiceRefactored extends Config {
             privateKey = (PrivateKey) keyStore.getKey(alias, passwordDialog.getEnteredPassword());
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
             MessageGuiDialog.showErrorDialog("Certificate Error:", "<html>Error while reading PrivateKey:<b>" + e.getLocalizedMessage() + "</html>");
-            throw new RuntimeException(ApiResponse.error("txn", "OT-02", "<html>Error while reading PrivateKey:<b>" + e.getLocalizedMessage() + "</html>"));
+            throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-02", "<html>Error while reading PrivateKey:<b>" + e.getLocalizedMessage() + "</html>"));
         }
     }
 
@@ -257,11 +266,11 @@ public class GetKeyStoreServiceRefactored extends Config {
             } else {
                 System.out.println("No Subject Alternative Names found in the certificate.");
                 logoutKeyStore();
-                MessageGuiDialog.showErrorDialog("Certificate Error", "<html>Certificate is not match with Login Email<br/>"+ certAttribute.get("E") +"</html>");
-                throw new RuntimeException(ApiResponse.error("txn", "OT-03", "Certificate Not found!"));
+                MessageGuiDialog.showErrorDialog("Certificate Error", "<html>Certificate is not match with Login Email<br/>" + certAttribute.get("E") + "</html>");
+                throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-03", "Certificate Not found!"));
             }
         } catch (CertificateParsingException e) {
-            throw new RuntimeException(ApiResponse.error("txn", "OT-03", e.getLocalizedMessage()));
+            throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-03", e.getLocalizedMessage()));
         }
         return (String) subjectAlterNativeName;
     }
@@ -286,10 +295,10 @@ public class GetKeyStoreServiceRefactored extends Config {
             MessageGuiDialog.showErrorDialog("User PIN Error", "PIN is Incorrect");
         } else if (e instanceof CertificateExpiredException || e instanceof CertificateNotYetValidException) {
             MessageGuiDialog.showErrorDialog("Certificate Error", "Certificate is expired or not yet valid.");
-            throw new RuntimeException(ApiResponse.error("txn", "OT-02", "Certificate is expired or not yet valid."));
+            throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-02", "Certificate is expired or not yet valid."));
         } else {
             MessageGuiDialog.showErrorDialog("Token Not found!", e.getLocalizedMessage());
-            throw new RuntimeException(ApiResponse.error("txn", "OT-02", e.getLocalizedMessage()));
+            throw new RuntimeException(ApiResponse.error(req.getTxn(), "OT-02", e.getLocalizedMessage()));
         }
     }
 

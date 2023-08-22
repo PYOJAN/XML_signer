@@ -66,7 +66,7 @@ public class SigningService {
             final Map<String, String> attributes = processAttributes(request.getCertificate().getAttributes());
 
             if (privateKey == null) {
-                ks = new GetKeyStoreServiceRefactored(attributes);
+                ks = new GetKeyStoreServiceRefactored(attributes, request);
                 privateKey = ks.getPrivateKey();
                 x509Cert = ks.getSelectedCertificate();
             }
@@ -88,7 +88,7 @@ public class SigningService {
                  XMLSignatureException | TransformerException | SAXException | ProviderException e) {
             performLogout();
             MessageGuiDialog.showErrorDialog("Initialization Error", "<html>Program Error: " + e.getLocalizedMessage() +
-                    "<br/><br/>Use combination of CTRL + ATL + Q to stop the Application." +
+                    "<br/><br/>Use combination of <b>CTRL + ATL + Q</b> to stop the Application." +
                     "<br/><br/>Use combination of CTRL + ATL + I to update PKCS11 path." +
                     "<br/><br/>Please recheck PKCS11 path.<html>");
             throw new RuntimeException(ApiResponse.error(request.getTxn(), "OT-03", e.getLocalizedMessage()));
