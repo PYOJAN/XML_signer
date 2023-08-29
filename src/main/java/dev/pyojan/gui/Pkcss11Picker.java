@@ -1,5 +1,6 @@
 package dev.pyojan.gui;
 
+import dev.pyojan.util.Utils;
 import lombok.Setter;
 
 import javax.swing.*;
@@ -32,6 +33,12 @@ public class Pkcss11Picker extends JDialog {
         setTitle(title);
         setAlwaysOnTop(true);
         setModal(true);
+
+        Image icon = Utils.getIcon();
+        if(icon != null) {
+            setIconImage(icon);
+        }
+
 
         // Window side [Input box size is 300]
         int width = 300;

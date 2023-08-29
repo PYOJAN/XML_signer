@@ -6,6 +6,7 @@ import dev.pyojan.entity.request.Attribute;
 import dev.pyojan.entity.request.PKiRequest;
 import dev.pyojan.entity.response.ApiResponse;
 import dev.pyojan.gui.MessageGuiDialog;
+import dev.pyojan.util.Utils;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import spark.Request;
@@ -71,9 +72,9 @@ public class SigningService {
                 x509Cert = ks.getSelectedCertificate();
             }
 
+            byte[] uglifiedXml = Utils.uglifyXmlForSign(new String(Base64.getDecoder().decode(request.getData()), StandardCharsets.UTF_8)).getBytes();
 
-            byte[] decodedXML = Base64.getDecoder().decode(request.getData());
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(decodedXML));
+            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(uglifiedXml));
 
             assert x509Cert != null;
             String signedData = new InstantiateSignXML().instantiatexml(doc, ks.getSelectedCertificate(), ks.getPrivateKey());
