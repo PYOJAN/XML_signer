@@ -1,10 +1,13 @@
 package dev.pyojan.gui;
 
+import dev.pyojan.Main;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Objects;
 
 
 public class PasswordDialog extends JDialog {
@@ -38,6 +41,10 @@ public class PasswordDialog extends JDialog {
         setModal(true);
         setTitle(title);
         setAlwaysOnTop(true);
+
+        ClassLoader classLoader = Main.class.getClassLoader();
+        ImageIcon imageIcon = new ImageIcon(Objects.requireNonNull(classLoader.getResource("logo.png")));
+        setIconImage(imageIcon.getImage());
 
         // Window side [Input box size is 300]
         int width = 280;

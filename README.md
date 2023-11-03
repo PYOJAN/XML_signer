@@ -84,6 +84,18 @@ This application use **1620** port number as default
 </response>
 ```
 
+#### Error Response
+
+```xml
+<response>
+    <command>pkiNetworkSign</command>
+    <ts>Fri Nov 03 12:49:20 IST 2023</ts>
+    <txn>2023-11-03T12:03:42.7853433 05:30</txn>
+    <status>failed</status>
+    <error code='OT-02'>User canceled the request</error>
+</response>
+```
+
 ## License
 
 Distributed under the MIT License. See [LICENSE](https://github.com/pyojan/XML_signer/blob/main/LICENSE.md) for more information.

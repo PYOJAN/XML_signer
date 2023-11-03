@@ -1,5 +1,6 @@
 package dev.pyojan.gui;
 
+import dev.pyojan.Main;
 import lombok.Getter;
 
 import javax.swing.*;
@@ -63,6 +64,12 @@ public class CertificateListChoose extends JDialog {
         setModal(true);
         setTitle("Select your certificate");
         getRootPane().setDefaultButton(buttonOK);
+
+
+        ClassLoader classLoader = Main.class.getClassLoader();
+        ImageIcon imageIcon = new ImageIcon(Objects.requireNonNull(classLoader.getResource("logo.png")));
+        setIconImage(imageIcon.getImage());
+
 
         // Window side [Input box size is 300]
         int width = 500;

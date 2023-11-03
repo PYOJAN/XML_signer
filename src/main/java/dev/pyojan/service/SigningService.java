@@ -82,11 +82,11 @@ public class SigningService {
             String signedXmlData = Base64.getEncoder().encodeToString(signedData.getBytes(StandardCharsets.UTF_8));
             ks.getKeyStore().load(null, null);
             return ApiResponse.success(request.getTxn(), new Date().toString(), signedXmlData);
-        } catch (IOException | ParserConfigurationException e) {
+        } catch (IOException |SAXException | IllegalArgumentException | ParserConfigurationException e) {
             MessageGuiDialog.showErrorDialog("Initialization Error", "<html>Program Error: " + e.getLocalizedMessage() + "<html>");
             throw new RuntimeException(ApiResponse.error(request.getTxn(), "OT-03", e.getLocalizedMessage()));
         } catch (MarshalException | InvalidAlgorithmParameterException | NoSuchAlgorithmException |
-                 XMLSignatureException | TransformerException | SAXException | ProviderException e) {
+                 XMLSignatureException | TransformerException | ProviderException e) {
             performLogout();
             MessageGuiDialog.showErrorDialog("Initialization Error", "<html>Program Error: " + e.getLocalizedMessage() +
                     "<br/><br/>Use combination of <b>CTRL + ATL + Q</b> to stop the Application." +
@@ -94,7 +94,7 @@ public class SigningService {
                     "<br/><br/>Please recheck PKCS11 path.<html>");
             throw new RuntimeException(ApiResponse.error(request.getTxn(), "OT-03", e.getLocalizedMessage()));
         } catch (CertificateException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(ApiResponse.error(null, "null", "Unknown Error:" + e.getLocalizedMessage()));
         }
     }
 

@@ -1,5 +1,6 @@
 package dev.pyojan.gui;
 
+import dev.pyojan.Main;
 import dev.pyojan.util.Utils;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.util.Objects;
 
 public class Pkcss11Picker extends JDialog {
     private JPanel main;
@@ -33,6 +35,10 @@ public class Pkcss11Picker extends JDialog {
         setTitle(title);
         setAlwaysOnTop(true);
         setModal(true);
+
+        ClassLoader classLoader = Main.class.getClassLoader();
+        ImageIcon imageIcon = new ImageIcon(Objects.requireNonNull(classLoader.getResource("logo.png")));
+        setIconImage(imageIcon.getImage());
 
         Image icon = Utils.getIcon();
         if(icon != null) {

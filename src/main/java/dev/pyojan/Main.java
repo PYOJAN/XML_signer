@@ -16,6 +16,8 @@ import spark.ExceptionHandler;
 import spark.Request;
 import spark.Response;
 
+import javax.swing.*;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static spark.Spark.*;
@@ -27,6 +29,10 @@ public class Main {
     public static void main(String[] args) {
         // GUI theme
         FlatMacDarkLaf.setup();
+
+        // Load an image from the resources folder
+        ClassLoader classLoader = Main.class.getClassLoader();
+        ImageIcon imageIcon = new ImageIcon(Objects.requireNonNull(classLoader.getResource("logo.png")));
 
         String javaVersion = System.getProperty("java.version");
         if (javaVersion.startsWith("1.8")) {
